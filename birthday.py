@@ -31,7 +31,7 @@ def getBirthdays(day, month):
             for name in friends:
                 name = name.strip('"')
                 if (name == ''):
-                    name = 'Nobody'
+                    name = 'nobody'
                 monthCounter += 1
                 if monthCounter > 14:
                     break
@@ -43,7 +43,7 @@ def getBirthdays(day, month):
     return months
 
 def fetchSpreadsheet(username, password):
-    print "Beginning to fetch the Birthday spreadsheet..."
+    print "Fetching the Birthday spreadsheet..."
     docid = '0AnDRnFzjhfTAdERvbC1YUnJTWlQtR3MwZzhlRERTRUE'
     gc = gspread.login(username, password);
     wks = gc.open('Team Birthdays').sheet1
@@ -75,5 +75,4 @@ if __name__ == '__main__':
     day     = strftime("%d")
     month   = strftime("%m")
     getBirthdays(day, month)
-    getBirthdays(13, 12)
-    #os.remove('Birth.csv');
+    os.remove('Birth.csv');
