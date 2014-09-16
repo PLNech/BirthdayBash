@@ -2,7 +2,6 @@
 #birthday.py
 #A script to tell you who's birthday it is
 #Author: paul-louis
-#TODO: Parameter the user/pass
 #TODO: Wish the lucky guy a wonderful birthday!
 #
 
@@ -11,19 +10,6 @@ import xlrd, csv
 import os, sys
 import gspread
 import getpass
-
-def xlsxToCSV(filename, sheetname):
-    wb = xlrd.open_workbook(filename)
-    sh = wb.sheet_by_name(sheetname)
-    out = open(filename.replace('xlsx', 'csv'), 'wb')
-    wr = csv.writer(out, quoting=csv.QUOTE_ALL)
-    iterator = 0
-    while iterator < sh.nrows:
-        line = sh.row_values(iterator)
-        line = [str(w).replace(',', ';') for w in line]
-        wr.writerow(line)
-        iterator += 1;
-    out.close()
 
 def getBirthdays(day, month):
     months = []
@@ -40,9 +26,9 @@ def getBirthdays(day, month):
             if dayCounter > 32:
                 break
 
-            guys = ', '.join(row).split(',')
-            guys.pop(0)
-            for name in guys:
+            friends = ', '.join(row).split(',')
+            friends.pop(0)
+            for name in friends:
                 name = name.strip('"')
                 if (name == ''):
                     name = 'Nobody'
@@ -82,6 +68,8 @@ if __name__ == '__main__':
         print "Usage: ./birthday username"
         sys.exit()
     username = sys.argv[1]
+    print "Hi", username.replace("@swiftkey.com",'') + "!"
+    print "Please enter your password to download the latest birthday spreadsheet."
     password = getpass.getpass()
     fetchSpreadsheet(username, password)
     day     = strftime("%d")
