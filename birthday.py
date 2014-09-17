@@ -11,12 +11,25 @@ import os, sys
 import gspread
 import getpass
 
+def init():
+    if len(sys.argv) != 2:
+        usage()
+    username = sys.argv[1]
+    print "Hi", username.replace("@swiftkey.com",'') + "!"
+    print "Please enter your password to download the latest birthday spreadsheet."
+    password = getpass.getpass()
+    return (username, password)
+
+def usage():
+    sys.exit()
+    print "Usage: ./birthday.py username"
+
 def getBirthdays(day, month):
     months = []
     dayCounter = 0
     with open('Birth.csv', 'rb') as csvfile:
-        linereader = csv.reader(csvfile, delimiter='\n', quotechar='|')
-        for row in linereader:
+        lineReader = csv.reader(csvfile, delimiter='\n', quotechar='|')
+        for row in lineReader:
             monthCounter = 1
             dayCounter +=1
             if dayCounter == 1:
@@ -35,11 +48,12 @@ def getBirthdays(day, month):
                 monthCounter += 1
                 if monthCounter > 14:
                     break
-                if (dayCounter-1 == int(day) and monthCounter-1 == int(month)):
+                dayReal = dayCounter-1
+                monthReal = monthCounter-1
+                if (dayReal == int(day) and monthReal == int(month)):
                     name = name.replace(';', ' and') + '\'s birthday!'
-                    print 'We are the', dayCounter-1, 'of', months[monthCounter-1]
+                    print 'We are the', dayReal, 'of', months[monthReal] + '.'
                     print 'Today is' , name
-
     return months
 
 def fetchSpreadsheet(username, password):
@@ -48,12 +62,12 @@ def fetchSpreadsheet(username, password):
     gc = gspread.login(username, password);
     wks = gc.open('Team Birthdays').sheet1
     spreadsheet = gc.open_by_key(docid)
-    for i, worksheet in enumerate(spreadsheet.worksheets()):
+    for i, workSheet in enumerate(spreadsheet.worksheets()):
         filename = 'Birth.csv'
         with open(filename, 'wb') as f:
             writer = csv.writer(f)
             newValues = []
-            for l in worksheet.get_all_values():
+            for l in workSheet.get_all_values():
                 newSubl = []
                 for s in l:
                     s = s.replace(',', ';')
@@ -63,16 +77,10 @@ def fetchSpreadsheet(username, password):
     print "Spreadsheet fetching completed."
 
 if __name__ == '__main__':
-
-    if len(sys.argv) != 2:
-        print "Usage: ./birthday username"
-        sys.exit()
-    username = sys.argv[1]
-    print "Hi", username.replace("@swiftkey.com",'') + "!"
-    print "Please enter your password to download the latest birthday spreadsheet."
-    password = getpass.getpass()
+    domain = "@swiftkey.com"
+    username, password = init()
+    if domain not in username:
+        username = username + domain
     fetchSpreadsheet(username, password)
-    day     = strftime("%d")
-    month   = strftime("%m")
-    getBirthdays(day, month)
+    getBirthdays(strftime("%d"),strftime("%m"))
     os.remove('Birth.csv');
