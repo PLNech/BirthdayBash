@@ -10,6 +10,7 @@ import xlrd, csv
 import os, sys
 import gspread
 import getpass
+import smtplib
 
 def init():
     if len(sys.argv) != 2:
@@ -23,6 +24,15 @@ def init():
 def usage():
     sys.exit()
     print "Usage: ./birthday.py username"
+
+def email(listBirthdays):
+    server = smtplib.SMTP('localhost')
+    msg = ""
+    for b in listBirthdays:
+        msg += "It is " + b + "'s birthday!\n"
+    server.sendmail("birthdays@swiftkey.com", "paul-louis@swiftkey.com", msg)
+    print "e-mail sent!"
+
 
 def getBirthdays(day, month):
     months = []
@@ -51,6 +61,8 @@ def getBirthdays(day, month):
                 dayReal = dayCounter-1
                 monthReal = monthCounter-1
                 if (dayReal == int(day) and monthReal == int(month)):
+                    listBirthdays = map(lambda x: x.strip(), name.split(';'))
+                    #email(listBirthdays)
                     name = name.replace(';', ' and') + '\'s birthday!'
                     print 'We are the', dayReal, 'of', months[monthReal] + '.'
                     print 'Today is' , name
@@ -74,7 +86,6 @@ def fetchSpreadsheet(username, password):
                     newSubl.append(s)
                 newValues.append(newSubl);
             writer.writerows(newValues)
-    print "Spreadsheet fetching completed."
 
 if __name__ == '__main__':
     domain = "@swiftkey.com"
@@ -83,4 +94,5 @@ if __name__ == '__main__':
         username = username + domain
     fetchSpreadsheet(username, password)
     getBirthdays(strftime("%d"),strftime("%m"))
+    getBirthdays(17, 9)
     os.remove('Birth.csv');
