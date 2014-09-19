@@ -22,8 +22,8 @@ def init():
     return (username, password)
 
 def usage():
-    sys.exit()
     print "Usage: ./birthday.py username"
+    sys.exit()
 
 def email(listBirthdays):
     server = smtplib.SMTP('localhost')
@@ -94,5 +94,4 @@ if __name__ == '__main__':
         username = username + domain
     fetchSpreadsheet(username, password)
     getBirthdays(strftime("%d"),strftime("%m"))
-    getBirthdays(17, 9)
     os.remove('Birth.csv');
